@@ -4,31 +4,51 @@ package cmsg;
 
 option go_package = "github.com/batigo/cmsg";
 
+// client消息
 message ClientMsg {
+  // 消息id
   string id = 1;
+  // 消息类型
   ClientMsgType type = 2;
-  int32 ack = 3;
+  // 本条消息是否需要回ack
+  bool ack = 3;
+  // 业务消息对应的service id
   optional string service_id = 4;
+  // biz_data压缩类型
   optional CompressorType compressor = 5;
+  // 业务消息data, 网关作为消息通道透传，  client <-> service
   optional bytes biz_data = 6;
+  // 初始化信息
   optional InitData init_data = 7;
 }
 
+// client消息类型
 enum ClientMsgType {
+  // 未使用
   Unused = 0;
+  // ws长连接初始化消息 client -> bati
   Init = 1;
+  // ws长简介初始化响应消息 client <- bati
   InitResp = 2;
+  // 业务消息 client <-> bati <-> service
   Biz = 3;
+  // ack消息
   Ack = 4;
+  // echo 消息用于测试 client <-> bati
   Echo = 100;
 }
 
 message InitData {
+  // biz_data压缩类型
   CompressorType accept_compressor = 1;
+  // 长连接心跳间隔，单位秒
   uint32 ping_interval = 2;
 }
 
 enum CompressorType {
+  // 消息biz_data不压缩
   Null = 0;
+  // 使用deflate压缩biz_data
   Deflate = 1;
 }
+
